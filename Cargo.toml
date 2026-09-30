@@ -1,0 +1,13 @@
+[package]
+name = "mlx-vs-candle"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+candle-core = { version = "0.11.0", features = ["metal"] }
+candle-nn = { version = "0.11.0", features = ["metal"] }
+mlx-rs = "0.32.0"
+
+[profile.release]
+debug = false

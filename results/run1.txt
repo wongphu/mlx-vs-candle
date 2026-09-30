@@ -1,0 +1,48 @@
+candle 0.11.0 (Metal) vs mlx-rs 0.32.0 (MLX)  |  median of 50 iters
+
+Correctness (f32, identical inputs, max |diff| / max |x|):
+  matmul     8.85e-7  ok
+  softmax    1.33e-7  ok
+  rms_norm   1.15e-7  ok
+  sdpa       3.06e-7  ok
+  conv2d     4.25e-7  ok
+  silu       7.18e-8  ok
+
+Benchmarks (candle / mlx = speedup of MLX; >1 means MLX faster):
+  add 1K f32 (dispatch latency)      candle    0.228 ms   mlx    0.218 ms    1.04x
+  matmul 1024x1024 F32               candle    0.828 ms   mlx    0.693 ms    1.19x
+  matmul 2048x2048 F32               candle    2.341 ms   mlx    2.349 ms    1.00x
+  matmul 4096x4096 F32               candle   16.666 ms   mlx   16.651 ms    1.00x
+  matmul 1024x1024 BF16              candle    0.477 ms   mlx    0.456 ms    1.05x
+  matmul 2048x2048 BF16              candle    2.201 ms   mlx    2.106 ms    1.05x
+  matmul 4096x4096 BF16              candle   15.223 ms   mlx   14.782 ms    1.03x
+  linear 4096x3840 @ W^T bf16        candle   14.339 ms   mlx   13.345 ms    1.07x
+  sdpa 30h x 1024 x 128 bf16         candle    2.231 ms   mlx    2.241 ms    1.00x
+  sdpa 30h x 4096 x 128 bf16         candle   30.838 ms   mlx   31.065 ms    0.99x
+  softmax 30x1024x1024 bf16          candle    0.953 ms   mlx    0.899 ms    1.06x
+  rms_norm 4096x3840 bf16            candle    0.447 ms   mlx    0.443 ms    1.01x
+  layer_norm 4096x3840 bf16          candle    0.469 ms   mlx    0.439 ms    1.07x
+  conv2d 3x3 512ch 128x128 bf16      candle   35.271 ms   mlx    3.459 ms   10.20x
+  add 64M bf16                       candle    1.813 ms   mlx    1.818 ms    1.00x
+  silu 64M bf16                      candle    1.301 ms   mlx    1.333 ms    0.98x
+  chain silu(a*b+a) 64M bf16         candle    4.464 ms   mlx    4.458 ms    1.00x
+
+| op | candle ms | mlx ms | candle | mlx | mlx speedup |
+|---|---:|---:|---:|---:|---:|
+| add 1K f32 (dispatch latency) | 0.228 | 0.218 |  |  | 1.04x |
+| matmul 1024x1024 F32 | 0.828 | 0.693 | 2.59 TFLOP/s | 3.10 TFLOP/s | 1.19x |
+| matmul 2048x2048 F32 | 2.341 | 2.349 | 7.34 TFLOP/s | 7.31 TFLOP/s | 1.00x |
+| matmul 4096x4096 F32 | 16.666 | 16.651 | 8.25 TFLOP/s | 8.25 TFLOP/s | 1.00x |
+| matmul 1024x1024 BF16 | 0.477 | 0.456 | 4.50 TFLOP/s | 4.71 TFLOP/s | 1.05x |
+| matmul 2048x2048 BF16 | 2.201 | 2.106 | 7.80 TFLOP/s | 8.16 TFLOP/s | 1.05x |
+| matmul 4096x4096 BF16 | 15.223 | 14.782 | 9.03 TFLOP/s | 9.30 TFLOP/s | 1.03x |
+| linear 4096x3840 @ W^T bf16 | 14.339 | 13.345 | 8.42 TFLOP/s | 9.05 TFLOP/s | 1.07x |
+| sdpa 30h x 1024 x 128 bf16 | 2.231 | 2.241 | 7.22 TFLOP/s | 7.19 TFLOP/s | 1.00x |
+| sdpa 30h x 4096 x 128 bf16 | 30.838 | 31.065 | 8.36 TFLOP/s | 8.30 TFLOP/s | 0.99x |
+| softmax 30x1024x1024 bf16 | 0.953 | 0.899 | 132.0 GB/s | 140.0 GB/s | 1.06x |
+| rms_norm 4096x3840 bf16 | 0.447 | 0.443 | 140.8 GB/s | 142.0 GB/s | 1.01x |
+| layer_norm 4096x3840 bf16 | 0.469 | 0.439 | 134.2 GB/s | 143.4 GB/s | 1.07x |
+| conv2d 3x3 512ch 128x128 bf16 | 35.271 | 3.459 | 2.19 TFLOP/s | 22.35 TFLOP/s | 10.20x |
+| add 64M bf16 | 1.813 | 1.818 | 222.0 GB/s | 221.5 GB/s | 1.00x |
+| silu 64M bf16 | 1.301 | 1.333 | 206.3 GB/s | 201.4 GB/s | 0.98x |
+| chain silu(a*b+a) 64M bf16 | 4.464 | 4.458 |  |  | 1.00x |
