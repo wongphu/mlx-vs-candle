@@ -65,3 +65,7 @@ Requirements for building mlx-rs (it compiles MLX from source):
 candle compiles its Metal kernels at runtime and needs neither.
 
 Layouts: each library runs in its native layout (candle conv2d is NCHW, MLX is NHWC).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
